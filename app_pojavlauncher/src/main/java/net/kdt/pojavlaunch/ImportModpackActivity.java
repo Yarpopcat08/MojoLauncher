@@ -16,8 +16,9 @@ import net.kdt.pojavlaunch.prefs.LauncherPreferences;
 import git.artdeell.mojo.R;
 
 /**
- * activity that handles opening .mrpack files from file manager as such.
- * Shows a confirmation dialog, then installs the modpack as a new instance.
+ * Activity that handles opening .mrpack files from an external file manager.
+ * Shows a confirmation dialog, then starts the install in the background
+ * and immediately navigates to the launcher.
  */
 public class ImportModpackActivity extends BaseActivity {
 
@@ -52,47 +53,44 @@ public class ImportModpackActivity extends BaseActivity {
             return;
         }
 
-        setContentView(R.layout.activity_import_modpack);
-
+        // Validate that this is actually a .mrpack file
         String fileName = Tools.getFileName(this, mUriData);
-        if (fileName == null) fileName = "unknown";
+        if (fileName == null || !fileName.toLowerCase().endsWith(".mrpack")) {
+            Toast.makeText(this, R.string.import_modpack_unsupported, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        setContentView(R.layout.activity_import_modpack);
 
         TextView fileNameView = findViewById(R.id.import_modpack_file_name);
         fileNameView.setText(getString(R.string.import_modpack_confirm, fileName));
 
         findViewById(R.id.import_modpack_install_button).setOnClickListener(v -> startInstall());
-        findViewById(R.id.import_modpack_cancel_button).setOnClickListener(v -> {
-            finishAndRemoveTask();
-        });
+        findViewById(R.id.import_modpack_cancel_button).setOnClickListener(v -> finishAndRemoveTask());
     }
 
     private void startInstall() {
-        // Disable buttons to prevent double-tap
-        findViewById(R.id.import_modpack_install_button).setEnabled(false);
-        findViewById(R.id.import_modpack_cancel_button).setEnabled(false);
-
         final Uri uri = mUriData;
         final ContentResolver contentResolver = getContentResolver();
-        final android.content.Context appContext = getApplicationContext();
+        final Context appContext = getApplicationContext();
 
-        PojavApplication.sExecutorService.execute(() -> {
-            boolean success = LocalModpackInstaller.installFromUri(uri, appContext, contentResolver);
-            runOnUiThread(() -> {
-                if (success) {
-                    Toast.makeText(appContext, R.string.import_modpack_success, Toast.LENGTH_SHORT).show();
-                    // Navigate to the launcher so the user sees their new instance
-                    Intent launcherIntent = new Intent(appContext, LauncherActivity.class);
-                    launcherIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(launcherIntent);
-                } else {
-                    Toast.makeText(appContext, R.string.import_modpack_failed, Toast.LENGTH_SHORT).show();
-                }
-                finishAndRemoveTask();
-            });
-        });
+        // Start the install in the background
+        PojavApplication.sExecutorService.execute(() ->
+            LocalModpackInstaller.installFromUri(uri, appContext, contentResolver)
+        );
+
+        // Immediately navigate to the launcher so the user can see progress there
+        Toast.makeText(this, R.string.import_modpack_installing, Toast.LENGTH_SHORT).show();
+        Intent launcherIntent = new Intent(this, LauncherActivity.class);
+        launcherIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(launcherIntent);
+        finishAndRemoveTask();
     }
 
-
+    /**
+     * Extract the URI from the incoming intent (supports VIEW action).
+     */
     private Uri getUriData() {
         Intent intent = getIntent();
         if (intent == null) return null;
@@ -100,11 +98,6 @@ public class ImportModpackActivity extends BaseActivity {
         // VIEW action: data is in getData()
         Uri data = intent.getData();
         if (data != null) return data;
-
-        // SEND action: data may be in extras
-        if (Intent.ACTION_SEND.equals(intent.getAction())) {
-            return intent.getParcelableExtra(Intent.EXTRA_STREAM);
-        }
 
         // Try clipData as fallback
         try {
