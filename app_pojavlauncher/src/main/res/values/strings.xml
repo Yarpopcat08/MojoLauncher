@@ -483,4 +483,12 @@
     <string name="instance_delete">Delete instance</string>
     <string name="instance_delete_confirmation">Are you sure you want to delete the instance? This will permanently delete all worlds, mods, resources and any other data in the instance directory. This action cannot be undone!</string>
     <string name="import_local_modpack">Import local modpack</string>
+
+    <string name="import_modpack_label">Import modpack</string>
+    <string name="import_modpack_title">Import Modpack</string>
+    <string name="import_modpack_confirm">Import \"%s\" as a new modpack instance?</string>
+    <string name="import_modpack_install">Install</string>
+    <string name="import_modpack_no_file">No modpack file provided</string>
+    <string name="import_modpack_success">Modpack imported successfully</string>
+    <string name="import_modpack_failed">Failed to import modpack</string>
 </resources>

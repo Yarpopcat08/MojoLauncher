@@ -61,6 +61,45 @@
             android:label="@string/app_short_name"
             android:windowSoftInputMode="adjustResize"/>
         <activity
+            android:name="net.kdt.pojavlaunch.ImportModpackActivity"
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog">
+            <!-- Handle .mrpack files opened from file managers -->
+            <intent-filter
+                android:label="@string/import_modpack_label"
+                tools:ignore="AppLinkUrlError">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.mrpack" />
+                <data android:pathPattern=".*\\..*\\.mrpack" />
+                <data android:pathPattern=".*\\..*\\..*\\.mrpack" />
+            </intent-filter>
+            <!-- Handle official Modrinth MIME type -->
+            <intent-filter
+                android:label="@string/import_modpack_label"
+                tools:ignore="AppLinkUrlError">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:mimeType="application/x-modrinth-modpack+zip" />
+            </intent-filter>
+            <!-- Handle SEND action (share) for .mrpack files -->
+            <intent-filter
+                android:label="@string/import_modpack_label"
+                tools:ignore="AppLinkUrlError">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name="net.kdt.pojavlaunch.ImportControlActivity"
             android:configChanges="keyboard|keyboardHidden"
             android:exported="true"

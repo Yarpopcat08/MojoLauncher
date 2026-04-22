@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_large">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/import_modpack_title"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="@dimen/padding_large" />
+
+    <TextView
+        android:id="@+id/import_modpack_file_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_marginBottom="@dimen/padding_large" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <com.kdt.mcgui.MineButton
+            android:id="@+id/import_modpack_install_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/padding_moderate"
+            android:text="@string/import_modpack_install" />
+
+        <com.kdt.mcgui.MineButton
+            android:id="@+id/import_modpack_cancel_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/padding_moderate"
+            android:text="@android:string/cancel" />
+
+    </LinearLayout>
+
+</LinearLayout>
